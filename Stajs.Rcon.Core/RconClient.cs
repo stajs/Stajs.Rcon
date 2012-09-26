@@ -7,17 +7,17 @@ using System.Text;
 
 namespace Stajs.Rcon.Core
 {
-	public class Rcon
+	public class RconClient
 	{
 		private readonly IPAddress _ipAddress;
 		private readonly int _port;
 
-		public Rcon(string ipAddress, int port, string password) : this(IPAddress.Parse(ipAddress), port, password)
+		public RconClient(string ipAddress, int port, string password) : this(IPAddress.Parse(ipAddress), port, password)
 		{
 			
 		}
 
-		public Rcon(IPAddress ipAddress, int port, string password)
+		public RconClient(IPAddress ipAddress, int port, string password)
 		{
 			_ipAddress = ipAddress;
 			_port = port;

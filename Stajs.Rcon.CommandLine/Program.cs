@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
+using Stajs.Rcon.Core;
 
 namespace Stajs.Rcon.CommandLine
 {
@@ -9,11 +11,19 @@ namespace Stajs.Rcon.CommandLine
 	{
 		static void Main(string[] args)
 		{
-			const string ipAddress = "0.0.0.0";
-			const int port = 27015;
-			const string password = "blah";
+			var ipAddress = ConfigurationManager.AppSettings["IpAddress"];
+			var port = int.Parse(ConfigurationManager.AppSettings["Port"]);
+			var password = ConfigurationManager.AppSettings["Password"];
 
-			var rcon = new Core.Rcon(ipAddress, port, password);
+			Console.WriteLine(ipAddress);
+			Console.WriteLine(port);
+			Console.WriteLine(password);
+
+			Console.ReadKey();
+
+			return;
+
+			var rcon = new RconClient(ipAddress, port, password);
 			rcon.Connect();
 		}
 	}
