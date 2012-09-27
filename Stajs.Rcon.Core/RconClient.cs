@@ -1,35 +1,119 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace Stajs.Rcon.Core
 {
-	public class RconClient
+	public class RconClient : IDisposable
 	{
-		private readonly IPAddress _ipAddress;
-		private readonly int _port;
+		private readonly IPEndPoint _server;
+		private readonly Socket _socket;
+		private readonly string _password;
 
-		public RconClient(string ipAddress, int port, string password) : this(IPAddress.Parse(ipAddress), port, password)
+		public RconClient(string ipAddress, int port, string password) : this(IPAddress.Parse(ipAddress), port, password) { }
+
+		public RconClient(IPAddress ipAddress, int port, string password) : this(new IPEndPoint(ipAddress, port), password) { }
+
+		public RconClient(IPEndPoint server, string password)
 		{
-			
+			Debug.Indent();
+			_server = server;
+			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			_socket.SendTimeout = 5000;
+			_socket.ReceiveTimeout = 5000;
+			_password = password;	
 		}
 
-		public RconClient(IPAddress ipAddress, int port, string password)
+		public void Test(string message)
 		{
-			_ipAddress = ipAddress;
-			_port = port;
+			Debug.Print("Connecting...");
+			_socket.Connect(_server);
+			Debug.Print("Connected: " + _socket.Connected);
+			Debug.Print("Say {0}", message);
+
+			var packet = new RconPacket
+			{
+				ServerDataCommand = ServerDataCommand.Auth,
+				String1 = _password 
+			};
+
+			Send(packet);
+			var response = Receive();
+
+			packet = new RconPacket
+			{
+				ServerDataCommand = ServerDataCommand.Exec,
+				String1 = "say " + message
+			};
+
+			Send(packet);
+			response = Receive();
+
+			packet = new RconPacket
+			{
+				ServerDataCommand = ServerDataCommand.Exec,
+				String1 = "status"
+			};
+
+			Send(packet);
+			response = Receive();
 		}
 
-		public void Connect()
+		private void Send(RconPacket packet)
 		{
-			var server = new IPEndPoint(_ipAddress, _port);
-			var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			socket.Connect(server);
+			var bytes = packet.GetBytes();
+			var i = _socket.Send(bytes);
+			Debug.Print("Sent {0} bytes.", i);
+		}
+
+		private string Receive()
+		{
+			//var position = 0;
+			//var bytes = new byte[4];
+			//while (position < bytes.Length)
+			//{
+			//	position += _socket.Receive(bytes, position, bytes.Length - position, SocketFlags.None);
+			//}
+			//Debug.Print("Received {0} bytes.", position);
+
+			//var i =_socket.Receive(bytes);
+			//Debug.Print("Received {0} bytes.", i);
+
+			//var packetSize = BitConverter.ToInt32(bytes, 0);
+			//Debug.Print("packetSize: " + packetSize);
+
+			//bytes = new byte[packetSize + 400];
+
+			//position = 0;
+			//while (position < bytes.Length)
+			//{
+			//	position += _socket.Receive(bytes, position, bytes.Length - position, SocketFlags.None);
+			//}
+
+			//Debug.Print("Received {0} bytes.", position);
 			
-			socket.Disconnect(true);
+			var bytes = new byte[311];
+
+			Thread.Sleep(150);
+
+			var i = _socket.Receive(bytes);
+			Debug.Print("Received {0} bytes.", i);
+
+			var response = Encoding.UTF8.GetString(bytes);
+			Debug.Print(response);
+
+			return response;
+		}
+
+		void IDisposable.Dispose()
+		{
+			if (_socket.Connected)
+				_socket.Close();
 		}
 	}
 }
