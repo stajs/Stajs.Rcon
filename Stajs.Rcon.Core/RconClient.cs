@@ -23,9 +23,11 @@ namespace Stajs.Rcon.Core
 		{
 			Debug.Indent();
 			_server = server;
-			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			_socket.SendTimeout = 5000;
-			_socket.ReceiveTimeout = 5000;
+			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+			{
+				SendTimeout = 5000,
+				ReceiveTimeout = 5000
+			};
 			_password = password;	
 		}
 
@@ -44,6 +46,7 @@ namespace Stajs.Rcon.Core
 
 			Send(packet);
 			var response = Receive();
+			Debug.Print(response);
 
 			packet = new RconPacket
 			{
@@ -53,6 +56,7 @@ namespace Stajs.Rcon.Core
 
 			Send(packet);
 			response = Receive();
+			Debug.Print(response);
 
 			packet = new RconPacket
 			{
@@ -62,6 +66,7 @@ namespace Stajs.Rcon.Core
 
 			Send(packet);
 			response = Receive();
+			Debug.Print(response);
 		}
 
 		private void Send(RconPacket packet)
