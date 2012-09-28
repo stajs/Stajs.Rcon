@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -78,30 +76,6 @@ namespace Stajs.Rcon.Core
 
 		private string Receive()
 		{
-			//var position = 0;
-			//var bytes = new byte[4];
-			//while (position < bytes.Length)
-			//{
-			//	position += _socket.Receive(bytes, position, bytes.Length - position, SocketFlags.None);
-			//}
-			//Debug.Print("Received {0} bytes.", position);
-
-			//var i =_socket.Receive(bytes);
-			//Debug.Print("Received {0} bytes.", i);
-
-			//var packetSize = BitConverter.ToInt32(bytes, 0);
-			//Debug.Print("packetSize: " + packetSize);
-
-			//bytes = new byte[packetSize + 400];
-
-			//position = 0;
-			//while (position < bytes.Length)
-			//{
-			//	position += _socket.Receive(bytes, position, bytes.Length - position, SocketFlags.None);
-			//}
-
-			//Debug.Print("Received {0} bytes.", position);
-			
 			var bytes = new byte[311];
 
 			Thread.Sleep(150);
