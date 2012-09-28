@@ -14,17 +14,9 @@ namespace Stajs.Rcon.CommandLine
 			var ipAddress = ConfigurationManager.AppSettings["IpAddress"];
 			var port = int.Parse(ConfigurationManager.AppSettings["Port"]);
 			var password = ConfigurationManager.AppSettings["Password"];
-
-			Console.WriteLine(ipAddress);
-			Console.WriteLine(port);
-			Console.WriteLine(password);
-
-			Console.ReadKey();
-
-			return;
-
+			
 			var rcon = new RconClient(ipAddress, port, password);
-			rcon.Connect();
+			rcon.Test("hai");
 		}
 	}
 }
