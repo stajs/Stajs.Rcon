@@ -37,9 +37,9 @@ namespace Stajs.Rcon.Core
 			Debug.Print("Connected: " + _socket.Connected);
 			Debug.Print("Say {0}", message);
 
-			var authPacket = new AuthenticateCommandPacket(_password);
+			var authCommand = new AuthenticateCommand(_password);
 
-			Send(authPacket);
+			Send(authCommand);
 			var response = Receive();
 			Debug.Print(response);
 
@@ -53,23 +53,16 @@ namespace Stajs.Rcon.Core
 			//response = Receive();
 			//Debug.Print(response);
 
-			var execPacket = new ExecuteCommandPacket(new StatusCommand());
+			var statusCommand = new StatusCommand();
 
-			Send(execPacket);
+			Send(statusCommand);
 			response = Receive();
 			Debug.Print(response);
 		}
 
-		private void Send(CommandPacket packet)
+		private void Send(Command command)
 		{
-			var bytes = packet.GetBytes();
-			var i = _socket.Send(bytes);
-			Debug.Print("Sent {0} bytes.", i);
-		}
-
-		private void Send(RconPacket packet)
-		{
-			var bytes = packet.GetBytes();
+			var bytes = command.GetBytes();
 			var i = _socket.Send(bytes);
 			Debug.Print("Sent {0} bytes.", i);
 		}

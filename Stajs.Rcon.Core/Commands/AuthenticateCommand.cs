@@ -1,15 +1,15 @@
 namespace Stajs.Rcon.Core.Commands
 {
-	internal class AuthenticateCommand : ICommand
+	internal class AuthenticateCommand : Command
 	{
 		private readonly string _password;
 
-		public AuthenticateCommand(string password)
+		public AuthenticateCommand(string password) : base(ServerCommand.Authenticate)
 		{
 			_password = password;
 		}
 
-		public string ToCommandString()
+		internal override string ToCommandString()
 		{
 			return _password;
 		}

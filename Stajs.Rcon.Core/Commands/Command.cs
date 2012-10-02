@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Stajs.Rcon.Core.Commands;
 
-namespace Stajs.Rcon.Core
+namespace Stajs.Rcon.Core.Commands
 {
-	internal abstract class CommandPacket
+	internal abstract class Command
 	{
-		private readonly CommandType _commandType;
-		private readonly ICommand _command;
-
-		protected CommandPacket(CommandType commandType, ICommand command)
-		{
-			_commandType = commandType;
-			_command = command;
-		}
+		private readonly ServerCommand _commandType;
 
 		// TODO: figure out what these are for
 		private const string String2 = "";
 		private const int RequestId = 69;
+
+		protected Command(ServerCommand commandType)
+		{
+			_commandType = commandType;
+		}
+
+		internal abstract string ToCommandString();
 
 		internal byte[] GetBytes()
 		{
@@ -31,7 +30,7 @@ namespace Stajs.Rcon.Core
 			var requestId = BitConverter.GetBytes(RequestId);
 			var command = BitConverter.GetBytes((int)_commandType);
 			var utf = new UTF8Encoding();
-			var string1 = utf.GetBytes(_command.ToCommandString());
+			var string1 = utf.GetBytes(ToCommandString());
 			var string2 = utf.GetBytes(String2);
 
 			var length = bytesForPacketSize

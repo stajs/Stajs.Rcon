@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Stajs.Rcon.Core.Commands
+﻿namespace Stajs.Rcon.Core.Commands
 {
-	internal class StatusCommand : ICommand
+	internal class StatusCommand : Command
 	{
-		public string ToCommandString()
+		public StatusCommand() : base(ServerCommand.Execute)
+		{
+		}
+
+		internal override string ToCommandString()
 		{
 			return "status";
 		}

@@ -9,19 +9,19 @@ using System.Threading;
 
 namespace Stajs.Rcon.Core
 {
-	public enum ResponseType
+	public enum ServerResponse
 	{
 		None = -1,
 
 		/// <summary>
 		/// SERVERDATA_AUTH_RESPONSE
-		/// Response to a <see cref="CommandType.Authenticate"/> command, or to a <see cref="CommandType.Execute"/> command if the connection is not authenticated.
+		/// Response to a <see cref="ServerCommand.Authenticate"/> command, or to a <see cref="ServerCommand.Execute"/> command if the connection is not authenticated.
 		/// </summary>
 		Auth = 2,
 
 		/// <summary>
 		/// SERVERDATA_RESPONSE_VALUE
-		/// Response to a <see cref="CommandType.Execute"/> if the connection is authenticated.
+		/// Response to a <see cref="ServerCommand.Execute"/> if the connection is authenticated.
 		/// </summary>
 		Value = 0
 	}
