@@ -1,12 +1,20 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Stajs.Rcon.Core
 {
-	internal class RconPacket
+	internal abstract class CommandPacket
 	{
-		public CommandType ServerDataCommand { get; set; }
-		public string String1 { get; set; }
+		private readonly CommandType _commandType;
+		private readonly string _command;
+
+		protected CommandPacket(CommandType commandType, string command)
+		{
+			_commandType = commandType;
+			_command = command;
+		}
 
 		// TODO: figure out what these are for
 		private const string String2 = "";
@@ -20,9 +28,9 @@ namespace Stajs.Rcon.Core
 			const int bytesForTerminator = 1;
 
 			var requestId = BitConverter.GetBytes(RequestId);
-			var command = BitConverter.GetBytes((int)ServerDataCommand);
+			var command = BitConverter.GetBytes((int)_commandType);
 			var utf = new UTF8Encoding();
-			var string1 = utf.GetBytes(String1);
+			var string1 = utf.GetBytes(_command);
 			var string2 = utf.GetBytes(String2);
 
 			var length = bytesForPacketSize
