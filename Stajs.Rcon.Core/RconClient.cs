@@ -46,15 +46,15 @@ namespace Stajs.Rcon.Core
 			var response = Receive();
 			Debug.Print(response);
 
-			packet = new RconPacket
-			{
-				ServerDataCommand = ServerDataCommand.Exec,
-				String1 = "say " + message
-			};
+			//packet = new RconPacket
+			//{
+			//	ServerDataCommand = ServerDataCommand.Exec,
+			//	String1 = "say " + message
+			//};
 
-			Send(packet);
-			response = Receive();
-			Debug.Print(response);
+			//Send(packet);
+			//response = Receive();
+			//Debug.Print(response);
 
 			packet = new RconPacket
 			{
