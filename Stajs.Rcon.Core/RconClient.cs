@@ -30,12 +30,9 @@ namespace Stajs.Rcon.Core
 			_password = password;	
 		}
 
-		public void Test(string message)
+		public void Test()
 		{
-			Debug.Print("Connecting...");
 			_socket.Connect(_server);
-			Debug.Print("Connected: " + _socket.Connected);
-			Debug.Print("Say {0}", message);
 
 			var authCommand = new AuthenticateCommand(_password);
 
@@ -43,15 +40,10 @@ namespace Stajs.Rcon.Core
 			var response = Receive();
 			Debug.Print(response);
 
-			//packet = new RconPacket
-			//{
-			//	ServerDataCommand = ServerDataCommand.Exec,
-			//	String1 = "say " + message
-			//};
-
-			//Send(packet);
-			//response = Receive();
-			//Debug.Print(response);
+			var sayCommand = new SayCommand("Oh hai!");
+			Send(sayCommand);
+			response = Receive();
+			Debug.Print(response);
 
 			var statusCommand = new StatusCommand();
 

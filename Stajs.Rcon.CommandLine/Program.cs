@@ -16,7 +16,7 @@ namespace Stajs.Rcon.CommandLine
 			var password = ConfigurationManager.AppSettings["Password"];
 			
 			var rcon = new RconClient(ipAddress, port, password);
-			rcon.Test("hai");
+			rcon.Test();
 		}
 	}
 }
