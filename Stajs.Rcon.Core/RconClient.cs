@@ -35,9 +35,13 @@ namespace Stajs.Rcon.Core
 			_socket.Connect(_server);
 
 			var authCommand = new AuthenticateCommand(_password);
-
 			Send(authCommand);
 			var response = Receive();
+			Debug.Print(response);
+
+			var usersCommand = new UsersCommand();
+			Send(usersCommand);
+			response = Receive();
 			Debug.Print(response);
 
 			var sayCommand = new SayCommand("Oh hai!");
@@ -46,7 +50,6 @@ namespace Stajs.Rcon.Core
 			Debug.Print(response);
 
 			var statusCommand = new StatusCommand();
-
 			Send(statusCommand);
 			response = Receive();
 			Debug.Print(response);

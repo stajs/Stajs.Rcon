@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Commands\AuthenticateCommand.cs" />
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\UsersCommand.cs" />
     <Compile Include="Commands\SayCommand.cs" />
     <Compile Include="Commands\StatusCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
