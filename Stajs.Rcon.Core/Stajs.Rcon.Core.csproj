@@ -40,8 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthCommandPacket.cs" />
+    <Compile Include="Commands\AuthenticateCommand.cs" />
+    <Compile Include="AuthenticateCommandPacket.cs" />
     <Compile Include="CommandPacket.cs" />
+    <Compile Include="Commands\StatusCommand.cs" />
+    <Compile Include="ExecuteCommandPacket.cs" />
+    <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RconClient.cs" />
     <Compile Include="RconPacket.cs" />

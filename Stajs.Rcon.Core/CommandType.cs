@@ -17,12 +17,12 @@ namespace Stajs.Rcon.Core
 		/// SERVERDATA_AUTH
 		/// Generally the first command sent to authenticate a connection.
 		/// </summary>
-		Auth = 3,
+		Authenticate = 3,
 
 		/// <summary>
 		/// SERVERDATA_EXECCOMMAND
 		/// The RCON command to execute.
 		/// </summary>
-		Exec = 2
+		Execute = 2
 	}
 }

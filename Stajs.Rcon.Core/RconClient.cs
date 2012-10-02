@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Stajs.Rcon.Core.Commands;
 
 namespace Stajs.Rcon.Core
 {
@@ -36,9 +37,9 @@ namespace Stajs.Rcon.Core
 			Debug.Print("Connected: " + _socket.Connected);
 			Debug.Print("Say {0}", message);
 
-			var packet = new AuthCommandPacket(_password);
+			var authPacket = new AuthenticateCommandPacket(_password);
 
-			Send(packet);
+			Send(authPacket);
 			var response = Receive();
 			Debug.Print(response);
 
@@ -52,13 +53,9 @@ namespace Stajs.Rcon.Core
 			//response = Receive();
 			//Debug.Print(response);
 
-			var packet2 = new RconPacket
-			{
-				ServerDataCommand = CommandType.Exec,
-				String1 = "status"
-			};
+			var execPacket = new ExecuteCommandPacket(new StatusCommand());
 
-			Send(packet2);
+			Send(execPacket);
 			response = Receive();
 			Debug.Print(response);
 		}
