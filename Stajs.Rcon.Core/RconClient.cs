@@ -64,6 +64,39 @@ namespace Stajs.Rcon.Core
 
 		private string Receive()
 		{
+			//TODO: timeout
+
+			// Packet size
+
+			var buffer = new byte[4];
+			var position = 0;
+
+			while (position < buffer.Length)
+				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
+
+			var packetSize = BitConverter.ToInt32(buffer, 0);
+
+			// Request Id
+			
+			buffer = new byte[4];
+			position = 0;
+
+			while (position < buffer.Length)
+				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
+
+			var requestId = BitConverter.ToInt32(buffer, 0);
+			
+			// Rest
+
+			buffer = new byte[packetSize - 4]; // minus request id
+			position = 0;
+
+			while (position < buffer.Length)
+				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
+
+			Debug.Print("Request Id: " + requestId);
+			return requestId.ToString();
+
 			var bytes = new byte[311];
 
 			Thread.Sleep(150);
