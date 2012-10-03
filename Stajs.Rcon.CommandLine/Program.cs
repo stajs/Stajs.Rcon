@@ -17,6 +17,7 @@ namespace Stajs.Rcon.CommandLine
 			
 			var rcon = new RconClient(ipAddress, port, password);
 			rcon.Test();
+
 		}
 	}
 }
