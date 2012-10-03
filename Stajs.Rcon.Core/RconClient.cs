@@ -55,7 +55,7 @@ namespace Stajs.Rcon.Core
 			Debug.Print(response);
 		}
 
-		private void Send(Command command)
+		private void Send(RconCommand command)
 		{
 			var bytes = command.GetBytes();
 			var i = _socket.Send(bytes);

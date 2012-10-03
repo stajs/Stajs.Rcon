@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Stajs.Rcon.Core
 {
-	public enum ServerCommand
+	public enum ServerCommandType
 	{
 		None = -1,
 

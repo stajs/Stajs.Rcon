@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Stajs.Rcon.Core.Commands
 {
-	internal abstract class Command
+	internal abstract class RconCommand
 	{
-		private readonly ServerCommand _commandType;
+		private readonly ServerCommandType _commandType;
 
 		// TODO: figure out what this is for
 		private const string String2 = "";
@@ -15,7 +15,7 @@ namespace Stajs.Rcon.Core.Commands
 		// TODO: increment
 		private const int RequestId = 69;
 
-		protected Command(ServerCommand commandType)
+		protected RconCommand(ServerCommandType commandType)
 		{
 			_commandType = commandType;
 		}

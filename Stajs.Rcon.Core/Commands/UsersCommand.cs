@@ -1,8 +1,8 @@
 ﻿namespace Stajs.Rcon.Core.Commands
 {
-	internal class UsersCommand : Command
+	internal class UsersCommand : RconCommand
 	{
-		public UsersCommand() : base(ServerCommand.Execute)
+		public UsersCommand() : base(ServerCommandType.Execute)
 		{
 		}
 
