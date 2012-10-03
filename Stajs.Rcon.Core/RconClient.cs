@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Stajs.Rcon.Core.Commands;
+using Stajs.Rcon.Core.Responses;
 
 namespace Stajs.Rcon.Core
 {
@@ -37,6 +38,7 @@ namespace Stajs.Rcon.Core
 			var authCommand = new AuthenticateCommand(_password);
 			Send(authCommand);
 			var response = Receive();
+			response = Receive();
 			Debug.Print(response);
 
 			var usersCommand = new UsersCommand();
@@ -64,11 +66,10 @@ namespace Stajs.Rcon.Core
 
 		private string Receive()
 		{
-			//TODO: timeout
+			// TODO: Timeout
+			// TODO: Exceptions
 
-			// Packet size
-
-			var buffer = new byte[4];
+			var buffer = new byte[RconPacket.PacketSizeLength];
 			var position = 0;
 
 			while (position < buffer.Length)
@@ -76,38 +77,14 @@ namespace Stajs.Rcon.Core
 
 			var packetSize = BitConverter.ToInt32(buffer, 0);
 
-			// Request Id
-			
-			buffer = new byte[4];
+			buffer = new byte[packetSize];
 			position = 0;
 
 			while (position < buffer.Length)
 				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
 
-			var requestId = BitConverter.ToInt32(buffer, 0);
-			
-			// Rest
-
-			buffer = new byte[packetSize - 4]; // minus request id
-			position = 0;
-
-			while (position < buffer.Length)
-				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
-
-			Debug.Print("Request Id: " + requestId);
-			return requestId.ToString();
-
-			var bytes = new byte[311];
-
-			Thread.Sleep(150);
-
-			var i = _socket.Receive(bytes);
-			Debug.Print("Received {0} bytes.", i);
-
-			var response = Encoding.UTF8.GetString(bytes);
-			Debug.Print(response);
-
-			return response;
+			var rconResponse = new RconResponse(buffer);
+			return rconResponse.Response;
 		}
 
 		void IDisposable.Dispose()

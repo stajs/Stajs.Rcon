@@ -54,11 +54,6 @@ namespace Stajs.Rcon.Core.Commands
 			 *		Used to terminate String2
 			 */
 
-			const int packetSizeLength = 4;
-			const int requestIdLength = 4;
-			const int commandTypeLength = 4;
-			const int terminatorLength = 1;
-
 			var utf = new UTF8Encoding();
 
 			var requestId = BitConverter.GetBytes(RequestId);
@@ -66,32 +61,32 @@ namespace Stajs.Rcon.Core.Commands
 			var command = utf.GetBytes(ToCommandString());
 			var string2 = utf.GetBytes(String2);
 
-			var totalLength = packetSizeLength
-				+ requestIdLength
-				+ commandTypeLength
+			var totalLength = RconPacket.PacketSizeLength
+				+ RconPacket.RequestIdLength
+				+ RconPacket.CommandTypeLength
 				+ command.Length
-				+ terminatorLength
+				+ RconPacket.TerminatorLength
 				+ string2.Length
-				+ terminatorLength;
+				+ RconPacket.TerminatorLength;
 
-			var packetSize = BitConverter.GetBytes(totalLength - packetSizeLength);
+			var packetSize = BitConverter.GetBytes(totalLength - RconPacket.PacketSizeLength);
 			var bytes = new byte[totalLength];
 			var i = 0;
 
 			packetSize.CopyTo(bytes, i);
-			i += packetSizeLength;
+			i += RconPacket.PacketSizeLength;
 
 			requestId.CopyTo(bytes, i);
-			i += requestIdLength;
+			i += RconPacket.RequestIdLength;
 
 			commandType.CopyTo(bytes, i);
-			i += commandTypeLength;
+			i += RconPacket.CommandTypeLength;
 
 			command.CopyTo(bytes, i);
 			i += command.Length;
 
 			bytes[i] = 0;
-			i += terminatorLength;
+			i += RconPacket.TerminatorLength;
 
 			string2.CopyTo(bytes, i);
 			i += string2.Length;

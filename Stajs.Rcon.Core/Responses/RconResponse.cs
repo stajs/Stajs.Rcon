@@ -1,24 +1,24 @@
 ﻿using System;
+using System.Linq;
+using System.Net.Sockets;
 using System.Text;
+using Stajs.Rcon.Core.Extensions;
 
 namespace Stajs.Rcon.Core.Responses
 {
 	internal class RconResponse
 	{
-		private readonly ServerResponseType _responseType;
+		public int RequestId { get; private set; }
+		public ServerResponseType ServerResponseType { get; private set; }
+		public string Response { get; private set; }
+		public string String2 { get; private set; }
 
-		// TODO: figure out what this is for
-		private const string String2 = "";
-
-		// TODO: increment
-		private const int RequestId = 69;
-
-		protected RconResponse(ServerResponseType responseType)
+		public RconResponse(byte[] packet)
 		{
-			_responseType = responseType;
+			Parse(packet);
 		}
 
-		internal string GetResponse(byte[] packet)
+		private void Parse(byte[] packet)
 		{
 			/* https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
 			 * 
@@ -57,8 +57,27 @@ namespace Stajs.Rcon.Core.Responses
 			 * String2 terminator (null = 1 byte)
 			 *		Used to terminate String2
 			 */
-			
-			return null;
+
+			// TODO: Exceptions
+			// TODO: store packet?
+
+			RequestId = ParseInt(packet);
+			packet = packet.RemoveFromStart(RconPacket.RequestIdLength);
+
+			ServerResponseType = (ServerResponseType) ParseInt(packet);
+			packet = packet.RemoveFromStart(RconPacket.ResponseTypeLength);
+
+			var strings = Encoding.UTF8.GetString(packet)
+				.Substring(0, packet.Length - 1) // Remove trailing '\0'
+				.Split('\0');
+
+			Response = strings.First();
+			String2 = strings.Last();
+		}
+
+		private int ParseInt(byte[] bytes)
+		{
+			return BitConverter.ToInt32(bytes, 0);
 		}
 	}
 }
