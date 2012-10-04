@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -42,40 +43,50 @@ namespace Stajs.Rcon.Core
 		{
 			_socket.Connect(_server);
 
-			var authCommand = new AuthenticateCommand(_password);
-			Send(authCommand);
-			var response = Receive();
-			response = Receive();
+			Send(new AuthenticateCommand(_password));
+			Receive();
+			Receive();
 
-			var usersCommand = new UsersCommand();
-			Send(usersCommand);
-			response = Receive();
-
-			var rawCommand = new RawCommand("wtf");
+			var rawCommand = new RawCommand("cvarlist");
 			Send(rawCommand);
-			response = Receive();
+			var response = Receive();
 
-			var sayCommand = new SayCommand("Oh hai!");
-			Send(sayCommand);
-			response = Receive();
+			// TODO: extract to method
+			while (!(response.Response.Trim() == "END" && response.RequestId == rawCommand.RequestId + 1))
+				response = Receive();
 
-			var statusCommand = new StatusCommand();
-			Send(statusCommand);
-			response = Receive();
+			Send(new UsersCommand());
+			Receive();
+
+			Send(new SayCommand("Oh hai!"));
+			Receive();
+
+			Send(new StatusCommand());
+			Receive();
 		}
 
 		private void Send(RconCommand command)
 		{
-			var bytes = command.GetBytes(++RequestId);
-			var bytesSent = _socket.Send(bytes);
-			Debug.Print("Bytes sent: " + bytesSent);
-			Debug.Print("command.RequestId: " + command.RequestId);
-			Debug.Print("command.CommandType: " + command.CommandType);
-			Debug.Print("command.Command: " + command.Command);
-			Debug.Print("----------------------------------------------");
+			SendWithTerminator(command);
 		}
 
-		private string Receive()
+		private void SendWithTerminator(RconCommand command)
+		{
+			var commands = new List<RconCommand> { command, new EndCommand() };
+
+			foreach (var c in commands)
+			{
+				var bytes = c.GetBytes(++RequestId);
+				var bytesSent = _socket.Send(bytes);
+				Debug.Print("   > Bytes sent: " + bytesSent);
+				Debug.Print("   > command.RequestId: " + c.RequestId);
+				Debug.Print("   > command.CommandType: " + c.CommandType);
+				Debug.Print("   > command.Command: " + c.Command);
+				Debug.Print("----------------------------------------------");
+			}
+		}
+
+		private RconResponse Receive()
 		{
 			// TODO: Timeout
 			// TODO: Exceptions
@@ -98,13 +109,13 @@ namespace Stajs.Rcon.Core
 
 			var bytesReceived = RconPacket.PacketSizeLength + buffer.Length;
 
-			Debug.Print("Bytes received: " + bytesReceived);
-			Debug.Print("response.RequestId: " + response.RequestId);
-			Debug.Print("response.ResponseType: " + response.ResponseType);
-			Debug.Print("response.Response: " + response.Response);
+			Debug.Print("<    Bytes received: " + bytesReceived);
+			Debug.Print("<    response.RequestId: " + response.RequestId);
+			Debug.Print("<    response.ResponseType: " + response.ResponseType);
+			Debug.Print("<    response.Response: " + response.Response);
 			Debug.Print("==============================================");
 
-			return response.Response;
+			return response;
 		}
 
 		void IDisposable.Dispose()

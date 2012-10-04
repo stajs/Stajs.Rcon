@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AuthenticateCommand.cs" />
+    <Compile Include="Commands\EndCommand.cs" />
     <Compile Include="Commands\RawCommand.cs" />
     <Compile Include="Commands\RconCommand.cs" />
     <Compile Include="Commands\UsersCommand.cs" />
