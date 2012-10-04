@@ -51,6 +51,10 @@ namespace Stajs.Rcon.Core
 			Send(usersCommand);
 			response = Receive();
 
+			var rawCommand = new RawCommand("wtf");
+			Send(rawCommand);
+			response = Receive();
+
 			var sayCommand = new SayCommand("Oh hai!");
 			Send(sayCommand);
 			response = Receive();
