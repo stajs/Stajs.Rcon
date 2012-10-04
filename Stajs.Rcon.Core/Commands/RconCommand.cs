@@ -5,22 +5,20 @@ namespace Stajs.Rcon.Core.Commands
 {
 	internal abstract class RconCommand
 	{
-		private readonly ServerCommandType _commandType;
-
-		// TODO: figure out what this is for
-		private const string String2 = "";
-
-		// TODO: increment
-		private const int RequestId = 69;
+		public int? RequestId { get; private set; }
+		public ServerCommandType CommandType { get; private set; }
+		public string Command { get { return ToCommandString(); } }
+		public string String2 { get; private set; }
 
 		protected RconCommand(ServerCommandType commandType)
 		{
-			_commandType = commandType;
+			CommandType = commandType;
+			String2 = string.Empty;
 		}
 
 		internal abstract string ToCommandString();
 
-		internal byte[] GetBytes()
+		internal byte[] GetBytes(int requestId)
 		{
 			/* https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
 			 * 
@@ -49,15 +47,18 @@ namespace Stajs.Rcon.Core.Commands
 			 *		
 			 * String2 (variable length)
 			 *		NFI WTH this is for ATM. It's empty from what I can see so far. Guess I'll find out more as I go...
+			 *		I'm not convinced this is actually used yet. From what I have seen it looks like "string1" is double-null terminated...
 			 *		
 			 * String2 terminator (null = 1 byte)
 			 *		Used to terminate String2
 			 */
 
+			RequestId = requestId;
+
 			var utf = new UTF8Encoding();
 
-			var requestId = BitConverter.GetBytes(RequestId);
-			var commandType = BitConverter.GetBytes((int)_commandType);
+			var id = BitConverter.GetBytes(RequestId.Value);
+			var commandType = BitConverter.GetBytes((int)CommandType);
 			var command = utf.GetBytes(ToCommandString());
 			var string2 = utf.GetBytes(String2);
 
@@ -76,7 +77,7 @@ namespace Stajs.Rcon.Core.Commands
 			packetSize.CopyTo(bytes, i);
 			i += RconPacket.PacketSizeLength;
 
-			requestId.CopyTo(bytes, i);
+			id.CopyTo(bytes, i);
 			i += RconPacket.RequestIdLength;
 
 			commandType.CopyTo(bytes, i);

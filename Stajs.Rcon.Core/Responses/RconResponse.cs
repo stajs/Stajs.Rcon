@@ -9,7 +9,7 @@ namespace Stajs.Rcon.Core.Responses
 	internal class RconResponse
 	{
 		public int RequestId { get; private set; }
-		public ServerResponseType ServerResponseType { get; private set; }
+		public ServerResponseType ResponseType { get; private set; }
 		public string Response { get; private set; }
 		public string String2 { get; private set; }
 
@@ -43,7 +43,7 @@ namespace Stajs.Rcon.Core.Responses
 			 *		command when the connection is not successfully authenticated.
 			 *		
 			 * Response (variable length, up to 4096 characters)
-			 *		The Reponse to the Command.
+			 *		The Reponse to the Command. Known as "string1" in the docs.
 			 *		At most 4096 characters, so a single Command may result in Response packets. Not sure how to tie them together yet.
 			 *		If the Response type is SERVERDATA_AUTH_RESPONSE the Response will be null.
 			 *		
@@ -52,7 +52,7 @@ namespace Stajs.Rcon.Core.Responses
 			 *		
 			 * String2 (variable length)
 			 *		NFI WTH this is for ATM. It's empty from what I can see so far. Guess I'll find out more as I go...
-			 *		If the Response type is SERVERDATA_AUTH_RESPONSE the Response will be null.
+			 *		I'm not convinced this is actually used yet. From what I have seen it looks like "string1" is double-null terminated...
 			 *		
 			 * String2 terminator (null = 1 byte)
 			 *		Used to terminate String2
@@ -64,7 +64,7 @@ namespace Stajs.Rcon.Core.Responses
 			RequestId = ParseInt(packet);
 			packet = packet.RemoveFromStart(RconPacket.RequestIdLength);
 
-			ServerResponseType = (ServerResponseType) ParseInt(packet);
+			ResponseType = (ServerResponseType) ParseInt(packet);
 			packet = packet.RemoveFromStart(RconPacket.ResponseTypeLength);
 
 			var strings = Encoding.UTF8.GetString(packet)

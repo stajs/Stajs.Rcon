@@ -15,6 +15,8 @@ namespace Stajs.Rcon.Core
 		private readonly Socket _socket;
 		private readonly string _password;
 
+		public int RequestId { get; private set; }
+
 		public RconClient(string ipAddress, int port, string password) : this(IPAddress.Parse(ipAddress), port, password) { }
 
 		public RconClient(IPAddress ipAddress, int port, string password) : this(new IPEndPoint(ipAddress, port), password) { }
@@ -22,13 +24,18 @@ namespace Stajs.Rcon.Core
 		public RconClient(IPEndPoint server, string password)
 		{
 			Debug.Indent();
+
 			_server = server;
+
 			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
 			{
 				SendTimeout = 5000,
 				ReceiveTimeout = 5000
 			};
-			_password = password;	
+
+			_password = password;
+
+			RequestId = 0;
 		}
 
 		public void Test()
@@ -39,29 +46,29 @@ namespace Stajs.Rcon.Core
 			Send(authCommand);
 			var response = Receive();
 			response = Receive();
-			Debug.Print(response);
 
 			var usersCommand = new UsersCommand();
 			Send(usersCommand);
 			response = Receive();
-			Debug.Print(response);
 
 			var sayCommand = new SayCommand("Oh hai!");
 			Send(sayCommand);
 			response = Receive();
-			Debug.Print(response);
 
 			var statusCommand = new StatusCommand();
 			Send(statusCommand);
 			response = Receive();
-			Debug.Print(response);
 		}
 
 		private void Send(RconCommand command)
 		{
-			var bytes = command.GetBytes();
-			var i = _socket.Send(bytes);
-			Debug.Print("Sent {0} bytes.", i);
+			var bytes = command.GetBytes(++RequestId);
+			var bytesSent = _socket.Send(bytes);
+			Debug.Print("Bytes sent: " + bytesSent);
+			Debug.Print("command.RequestId: " + command.RequestId);
+			Debug.Print("command.CommandType: " + command.CommandType);
+			Debug.Print("command.Command: " + command.Command);
+			Debug.Print("----------------------------------------------");
 		}
 
 		private string Receive()
@@ -83,8 +90,17 @@ namespace Stajs.Rcon.Core
 			while (position < buffer.Length)
 				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
 
-			var rconResponse = new RconResponse(buffer);
-			return rconResponse.Response;
+			var response = new RconResponse(buffer);
+
+			var bytesReceived = RconPacket.PacketSizeLength + buffer.Length;
+
+			Debug.Print("Bytes received: " + bytesReceived);
+			Debug.Print("response.RequestId: " + response.RequestId);
+			Debug.Print("response.ResponseType: " + response.ResponseType);
+			Debug.Print("response.Response: " + response.Response);
+			Debug.Print("==============================================");
+
+			return response.Response;
 		}
 
 		void IDisposable.Dispose()
