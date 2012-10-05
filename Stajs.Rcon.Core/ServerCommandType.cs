@@ -11,8 +11,6 @@ namespace Stajs.Rcon.Core
 {
 	public enum ServerCommandType
 	{
-		None = -1,
-
 		/// <summary>
 		/// SERVERDATA_AUTH
 		/// Generally the first command sent to authenticate a connection.

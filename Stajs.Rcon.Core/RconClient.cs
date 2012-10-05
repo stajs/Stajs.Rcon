@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -15,6 +16,8 @@ namespace Stajs.Rcon.Core
 		private readonly IPEndPoint _server;
 		private readonly Socket _socket;
 		private readonly string _password;
+
+		private List<int> _openResponses = new List<int>();
 
 		public int RequestId { get; private set; }
 
@@ -47,22 +50,25 @@ namespace Stajs.Rcon.Core
 			Receive();
 			Receive();
 
-			var rawCommand = new RawCommand("cvarlist");
-			Send(rawCommand);
-			var response = Receive();
+			//var rawCommand = new RawCommand("cvarlist");
+			//Send(rawCommand);
+			//var response = Receive();
 
-			// TODO: extract to method
-			while (!(response.Response.Trim() == "END" && response.RequestId == rawCommand.RequestId + 1))
-				response = Receive();
+			//// TODO: extract to method
+			//while (!(response.Response.Trim() == "END" && response.RequestId == rawCommand.RequestId + 1))
+			//	response = Receive();
 
 			Send(new UsersCommand());
 			Receive();
 
-			Send(new SayCommand("Oh hai!"));
-			Receive();
+			//Send(new SayCommand("Oh hai!"));
+			//Receive();
 
 			Send(new StatusCommand());
 			Receive();
+
+			Debug.Print("_openResponses.Count: " + _openResponses.Count);
+			Debug.Print("_openResponses: " + string.Join(",", _openResponses));
 		}
 
 		private void Send(RconCommand command)
@@ -78,6 +84,10 @@ namespace Stajs.Rcon.Core
 			{
 				var bytes = c.GetBytes(++RequestId);
 				var bytesSent = _socket.Send(bytes);
+
+				if (!(c is EndCommand))
+					_openResponses.Add(RequestId);
+
 				Debug.Print("   > Bytes sent: " + bytesSent);
 				Debug.Print("   > command.RequestId: " + c.RequestId);
 				Debug.Print("   > command.CommandType: " + c.CommandType);
@@ -86,36 +96,39 @@ namespace Stajs.Rcon.Core
 			}
 		}
 
-		private RconResponse Receive()
+		private RconPacket Receive()
 		{
 			// TODO: Timeout
 			// TODO: Exceptions
+			
+			//while (!(response.Response.Trim() == "END" && response.RequestId == rawCommand.RequestId + 1))
+			//	response = Receive();
 
-			var buffer = new byte[RconPacket.PacketSizeLength];
+			var sizeBuffer = ReadFromSocket(RconPacket.PacketSizeLength);
+			var packetSize = BitConverter.ToInt32(sizeBuffer, 0);
+			var packetBuffer = ReadFromSocket(packetSize);
+			var totalBytes = sizeBuffer.Concat(packetBuffer).ToArray();
+			var packet = new RconPacket(totalBytes);
+
+			Debug.Print("<    Bytes received: " + totalBytes.Length);
+			Debug.Print("<    packet.Size: " + packet.Size);
+			Debug.Print("<    packet.RequestId: " + packet.RequestId);
+			Debug.Print("<    packet.ResponseType: " + packet.ResponseType);
+			Debug.Print("<    packet.Response: " + packet.Response);
+			Debug.Print("==============================================");
+
+			return packet;
+		}
+
+		private byte[] ReadFromSocket(int length)
+		{
+			var buffer = new byte[length];
 			var position = 0;
 
 			while (position < buffer.Length)
 				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
 
-			var packetSize = BitConverter.ToInt32(buffer, 0);
-
-			buffer = new byte[packetSize];
-			position = 0;
-
-			while (position < buffer.Length)
-				position += _socket.Receive(buffer, position, buffer.Length - position, SocketFlags.None);
-
-			var response = new RconResponse(buffer);
-
-			var bytesReceived = RconPacket.PacketSizeLength + buffer.Length;
-
-			Debug.Print("<    Bytes received: " + bytesReceived);
-			Debug.Print("<    response.RequestId: " + response.RequestId);
-			Debug.Print("<    response.ResponseType: " + response.ResponseType);
-			Debug.Print("<    response.Response: " + response.Response);
-			Debug.Print("==============================================");
-
-			return response;
+			return buffer;
 		}
 
 		void IDisposable.Dispose()

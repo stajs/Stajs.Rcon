@@ -11,8 +11,6 @@ namespace Stajs.Rcon.Core
 {
 	public enum ServerResponseType
 	{
-		None = -1,
-
 		/// <summary>
 		/// SERVERDATA_AUTH_RESPONSE
 		/// Response to a <see cref="ServerCommandType.Authenticate"/> command, or to a <see cref="ServerCommandType.Execute"/> command if the connection is not authenticated.
