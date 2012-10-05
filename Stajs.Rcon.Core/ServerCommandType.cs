@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-
-namespace Stajs.Rcon.Core
+﻿namespace Stajs.Rcon.Core
 {
 	public enum ServerCommandType
 	{

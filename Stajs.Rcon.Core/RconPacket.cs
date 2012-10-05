@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using Stajs.Rcon.Core.Extensions;
 
@@ -21,6 +19,11 @@ namespace Stajs.Rcon.Core
 		public ServerResponseType ResponseType { get; private set; }
 		public string Response { get; private set; }
 		public string String2 { get; private set; }
+
+		public bool IsEndResponsePacket
+		{
+			get { return Response.Trim() == "END"; }
+		}
 
 		public RconPacket(byte[] bytes)
 		{
