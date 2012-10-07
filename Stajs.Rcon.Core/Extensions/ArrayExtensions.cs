@@ -19,5 +19,29 @@ namespace Stajs.Rcon.Core.Extensions
 				.Skip(count)
 				.ToArray();
 		}
+
+		internal static byte[] RemoveFromEnd(this byte[] bytes, int count)
+		{
+			bytes = bytes
+				.Reverse()
+				.ToArray();
+
+			bytes = bytes.RemoveFromStart(count);
+
+			return bytes
+				.Reverse()
+				.ToArray();
+		}
+
+		internal static bool IsDoubleNullTerminated(this byte[] bytes)
+		{
+			if (bytes.Length < 2)
+				return false;
+
+			var lastIndex = bytes.Length - 1;
+			var secondToLastIndex = lastIndex - 1;
+
+			return bytes[lastIndex] == 0 && bytes[secondToLastIndex] == 0;
+		}
 	}
 }

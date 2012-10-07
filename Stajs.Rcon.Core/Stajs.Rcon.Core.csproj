@@ -47,6 +47,7 @@
     <Compile Include="Commands\UsersCommand.cs" />
     <Compile Include="Commands\SayCommand.cs" />
     <Compile Include="Commands\StatusCommand.cs" />
+    <Compile Include="Exceptions\HolyShitException.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,6 +61,7 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
