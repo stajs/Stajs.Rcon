@@ -16,10 +16,13 @@ namespace Stajs.Rcon.CommandLine
 			Console.WriteLine("Connecting to {0}:{1}", ipAddress, port);
 			var rcon = new RconClient(ipAddress, port);
 
-			Console.WriteLine("Connected, authenticating with password \"{0}\"...", password);
-			var requestId = rcon.Send(new AuthenticateCommand(password));
+			Console.WriteLine("Connected, authenticating with password \"{0}\"", password);
+			var response = rcon.Send(new AuthenticateCommand(password));
+			Console.WriteLine(response.Content);
 
-			Console.WriteLine("requestId: {0}", requestId);
+			Console.WriteLine("Status");
+			response = rcon.Send(new StatusCommand());
+			Console.WriteLine(response.Content);
 
 			Console.ReadKey();
 			//rcon.Test();

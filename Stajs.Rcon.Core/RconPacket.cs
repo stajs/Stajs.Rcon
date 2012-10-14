@@ -5,7 +5,7 @@ using Stajs.Rcon.Core.Extensions;
 
 namespace Stajs.Rcon.Core
 {
-	internal class RconPacket
+	public class RconPacket
 	{
 		public static readonly int PacketSizeLength = 4;
 		public static readonly int RequestIdLength = 4;

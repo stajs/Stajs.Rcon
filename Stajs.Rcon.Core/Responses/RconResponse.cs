@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Stajs.Rcon.Core.Responses
 {
-	internal class RconResponse
+	public class RconResponse
 	{
 		public int RequestId { get; private set; }
 		public List<RconPacket> Packets { get; private set; }

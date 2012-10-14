@@ -52,12 +52,12 @@ namespace Stajs.Rcon.Core
 			Debug.Print("_openResponses: " + string.Join(",", _openResponses));
 		}
 
-		public int Send(RconCommand command)
+		public RconResponse Send(RconCommand command)
 		{
 			return SendWithTerminator(command);
 		}
 
-		private int SendWithTerminator(RconCommand command)
+		private RconResponse SendWithTerminator(RconCommand command)
 		{
 			var commands = new List<RconCommand> { command, new EndCommand() };
 
@@ -76,7 +76,9 @@ namespace Stajs.Rcon.Core
 				Debug.Print("----------------------------------------------");
 			}
 
-			return command.RequestId.Value;
+			Receive();
+
+			return _responses.First(r => r.RequestId == command.RequestId.Value);
 		}
 
 		private void Receive()

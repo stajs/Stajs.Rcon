@@ -1,6 +1,6 @@
 ﻿namespace Stajs.Rcon.Core.Commands
 {
-	internal class StatusCommand : RconCommand
+	public class StatusCommand : RconCommand
 	{
 		public StatusCommand() : base(ServerCommandType.Execute)
 		{
