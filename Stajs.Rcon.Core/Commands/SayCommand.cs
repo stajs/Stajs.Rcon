@@ -1,6 +1,6 @@
 ﻿namespace Stajs.Rcon.Core.Commands
 {
-	internal class SayCommand : RconCommand
+	public class SayCommand : RconCommand
 	{
 		private readonly string _message;
 
