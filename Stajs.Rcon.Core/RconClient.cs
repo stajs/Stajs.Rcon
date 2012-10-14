@@ -20,15 +20,13 @@ namespace Stajs.Rcon.Core
 		private readonly List<RconPacket> _openPackets = new List<RconPacket>();
 		private readonly Queue<RconResponse> _responses = new Queue<RconResponse>();
 
+		public RconClient(string ipAddress, int port) : this(IPAddress.Parse(ipAddress), port) { }
 
-		public RconClient(string ipAddress, int port, string password) : this(IPAddress.Parse(ipAddress), port, password) { }
+		public RconClient(IPAddress ipAddress, int port) : this(new IPEndPoint(ipAddress, port)) { }
 
-		public RconClient(IPAddress ipAddress, int port, string password) : this(new IPEndPoint(ipAddress, port), password) { }
-
-		public RconClient(IPEndPoint server, string password)
+		public RconClient(IPEndPoint server)
 		{
 			_requestId = 0;
-			_password = password;
 			_server = server;
 			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
 			{
@@ -54,12 +52,12 @@ namespace Stajs.Rcon.Core
 			Debug.Print("_openResponses: " + string.Join(",", _openResponses));
 		}
 
-		public void Send(RconCommand command)
+		public int Send(RconCommand command)
 		{
-			SendWithTerminator(command);
+			return SendWithTerminator(command);
 		}
 
-		private void SendWithTerminator(RconCommand command)
+		private int SendWithTerminator(RconCommand command)
 		{
 			var commands = new List<RconCommand> { command, new EndCommand() };
 
@@ -77,6 +75,8 @@ namespace Stajs.Rcon.Core
 				Debug.Print("   > Bytes sent: " + bytesSent);
 				Debug.Print("----------------------------------------------");
 			}
+
+			return command.RequestId.Value;
 		}
 
 		private void Receive()

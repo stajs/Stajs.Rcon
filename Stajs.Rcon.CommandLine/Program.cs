@@ -14,10 +14,12 @@ namespace Stajs.Rcon.CommandLine
 			var password = ConfigurationManager.AppSettings["Password"];
 
 			Console.WriteLine("Connecting to {0}:{1}", ipAddress, port);
-			var rcon = new RconClient(ipAddress, port, password);
+			var rcon = new RconClient(ipAddress, port);
 
 			Console.WriteLine("Connected, authenticating with password \"{0}\"...", password);
-			rcon.Send(new AuthenticateCommand(password));
+			var requestId = rcon.Send(new AuthenticateCommand(password));
+
+			Console.WriteLine("requestId: {0}", requestId);
 
 			Console.ReadKey();
 			//rcon.Test();
