@@ -14,12 +14,12 @@ namespace Stajs.Rcon.Core
 		private readonly IPEndPoint _server;
 		private readonly Socket _socket;
 		private readonly string _password;
+		private int _requestId;
 
 		private readonly List<int> _openResponses = new List<int>();
 		private readonly List<RconPacket> _openPackets = new List<RconPacket>();
 		private readonly Queue<RconResponse> _responses = new Queue<RconResponse>();
 
-		public int RequestId { get; private set; }
 
 		public RconClient(string ipAddress, int port, string password) : this(IPAddress.Parse(ipAddress), port, password) { }
 
@@ -27,20 +27,21 @@ namespace Stajs.Rcon.Core
 
 		public RconClient(IPEndPoint server, string password)
 		{
-			RequestId = 0;
+			_requestId = 0;
 			_password = password;
 			_server = server;
 			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
 			{
-				SendTimeout = 2000,
-				ReceiveTimeout = 2000
+				SendTimeout = 200,
+				ReceiveTimeout = 200
 			};
+
+			_socket.Connect(_server);
 		}
 
+		[Obsolete]
 		public void Test()
 		{
-			_socket.Connect(_server);
-
 			Send(new AuthenticateCommand(_password));
 			Send(new RawCommand("cvarlist"));
 			Send(new UsersCommand());
@@ -53,7 +54,7 @@ namespace Stajs.Rcon.Core
 			Debug.Print("_openResponses: " + string.Join(",", _openResponses));
 		}
 
-		private void Send(RconCommand command)
+		public void Send(RconCommand command)
 		{
 			SendWithTerminator(command);
 		}
@@ -64,16 +65,16 @@ namespace Stajs.Rcon.Core
 
 			foreach (var c in commands)
 			{
-				var bytes = c.GetBytes(++RequestId);
+				var bytes = c.GetBytes(++_requestId);
 				var bytesSent = _socket.Send(bytes);
 
 				if (!(c is EndCommand))
-					_openResponses.Add(RequestId);
+					_openResponses.Add(_requestId);
 
-				Debug.Print("   > Bytes sent: " + bytesSent);
 				Debug.Print("   > command.RequestId: " + c.RequestId);
 				Debug.Print("   > command.CommandType: " + c.CommandType);
 				Debug.Print("   > command.Command: " + c.Command);
+				Debug.Print("   > Bytes sent: " + bytesSent);
 				Debug.Print("----------------------------------------------");
 			}
 		}

@@ -1,6 +1,6 @@
 namespace Stajs.Rcon.Core.Commands
 {
-	internal class AuthenticateCommand : RconCommand
+	public class AuthenticateCommand : RconCommand
 	{
 		private readonly string _password;
 

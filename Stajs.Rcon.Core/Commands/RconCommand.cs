@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Stajs.Rcon.Core.Commands
 {
-	internal abstract class RconCommand
+	public abstract class RconCommand
 	{
 		public int? RequestId { get; private set; }
 		public ServerCommandType CommandType { get; private set; }
