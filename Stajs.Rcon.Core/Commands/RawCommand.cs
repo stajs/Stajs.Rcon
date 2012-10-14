@@ -1,6 +1,6 @@
 ﻿namespace Stajs.Rcon.Core.Commands
 {
-	internal class RawCommand : RconCommand
+	public class RawCommand : RconCommand
 	{
 		private readonly string _command;
 

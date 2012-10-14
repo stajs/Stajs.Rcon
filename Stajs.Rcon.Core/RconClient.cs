@@ -66,8 +66,10 @@ namespace Stajs.Rcon.Core
 				var bytes = c.GetBytes(++_requestId);
 				var bytesSent = _socket.Send(bytes);
 
-				if (!(c is EndCommand))
-					_openResponses.Add(_requestId);
+				if (c is EndCommand)
+					continue;
+
+				_openResponses.Add(_requestId);
 
 				Debug.Print("   > command.RequestId: " + c.RequestId);
 				Debug.Print("   > command.CommandType: " + c.CommandType);
@@ -78,7 +80,7 @@ namespace Stajs.Rcon.Core
 
 			Receive();
 
-			return _responses.First(r => r.RequestId == command.RequestId.Value);
+			return _responses.Single(r => r.RequestId == command.RequestId.Value);
 		}
 
 		private void Receive()
@@ -103,15 +105,16 @@ namespace Stajs.Rcon.Core
 			_openPackets.Add(packet);
 
 			if (packet.IsEndResponsePacket)
+			{
 				EndResponse(packet.RequestId);
+				return;
+			}
 
-			// TODO: verbose logging level
-			//Debug.Print("<    Bytes received: " + totalBytes.Length);
-			//Debug.Print("<    packet.Size: " + packet.Size);
-			//Debug.Print("<    packet.RequestId: " + packet.RequestId);
-			//Debug.Print("<    packet.ResponseType: " + packet.ResponseType);
-			//Debug.Print("<    packet.Response: " + packet.Response);
-			//Debug.Print("----------------------------------------------");
+			Debug.Print("<    packet.RequestId: " + packet.RequestId);
+			Debug.Print("<    packet.ResponseType: " + packet.ResponseType);
+			Debug.Print("<    packet.Response:\n" + packet.Response);
+			Debug.Print("<    Bytes received: " + totalBytes.Length);
+			Debug.Print("----------------------------------------------");
 		}
 
 		private void EndResponse(int endResponseId)
