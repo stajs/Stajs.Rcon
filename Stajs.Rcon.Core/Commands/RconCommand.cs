@@ -8,49 +8,51 @@ namespace Stajs.Rcon.Core.Commands
 		public int? RequestId { get; private set; }
 		public ServerCommandType CommandType { get; private set; }
 		public string Command { get { return ToCommandString(); } }
-		public string String2 { get; private set; }
 
 		protected RconCommand(ServerCommandType commandType)
 		{
 			CommandType = commandType;
-			String2 = string.Empty;
 		}
 
 		internal abstract string ToCommandString();
 
 		internal byte[] GetBytes(int requestId)
 		{
-			/* https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
+			/* Note: My interpretation of the packet structure is slightly simplified when compared to
+			 * the official (but community written) wiki. Based on the limited number of packets I've
+			 * seen so far, I have not seen String2 being used at all and it seems to me that the
+			 * Response is just double-null terminated. I'm willing to re-instate String2 should it
+			 * turn out to actually be used.
 			 * 
-			 *             +------------------------------ Packet size ----------------------------------+
-			 *             v                                                                             v
-			 * +-----------+----------+------------+-------+------------------+-------+------------------+
-			 * |Packet size|Request Id|Command type|Command|Command terminator|String2|String2 terminator|
-			 * +-----------+----------+------------+-------+------------------+-------+------------------+
+			 * https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
+			 * 
+			 *             +---------- Packet size -----------+
+			 *             v                                  v
+			 * +-----------+----------+----+-------+----------+
+			 * |Packet size|Request Id|Type|Command|Terminator|
+			 * +-----------+----------+----+-------+----------+
 			 * 
 			 * Packet size (int = 4 bytes)
-			 *		Size of packet from the start of the Request Id to the end of the String2 terminator.
+			 *		Size of packet from the start of the Request Id to the end of the Terminator.
 			 *	
 			 * Request Id (int = 4 bytes)
-			 *		The Request Id is mirrored back in the response, so you can marry it up with the command.
+			 *		If the Request Id is mirrored from the Request, then the response is successful.
+			 *		If the Request Id is -1, then authentication failed with a bad password.
+			 *		Any other Request Id is an an error and an auth Command should be sent before retrying.
 			 *		It should be incremented for each request.
 			 *		
 			 * Command type (int = 4 bytes)
 			 *		Either SERVERDATA_AUTH (3) or SERVERDATA_EXECCOMMAND (2)
 			 *		
-			 * Command (variable length)
+			 * Command (variable length, up to 4096 characters)
 			 *		Known as "string1" in the docs. For SERVERDATA_AUTH, this will be the password to authenticate
 			 *		with. For SERVERDATA_EXECCOMMAND, this will be the command to execute (e.g. "status" or "say hello world").
 			 *		
 			 * Command terminator (null = 1 byte)
 			 *		Used to terminate the Command
 			 *		
-			 * String2 (variable length)
-			 *		NFI WTH this is for ATM. It's empty from what I can see so far. Guess I'll find out more as I go...
-			 *		I'm not convinced this is actually used yet. From what I have seen it looks like "string1" is double-null terminated...
-			 *		
-			 * String2 terminator (null = 1 byte)
-			 *		Used to terminate String2
+			 * Terminator (2 x null = 2 bytes)
+			 *		Used to terminate the packet
 			 */
 
 			RequestId = requestId;
@@ -60,15 +62,12 @@ namespace Stajs.Rcon.Core.Commands
 			var id = BitConverter.GetBytes(RequestId.Value);
 			var commandType = BitConverter.GetBytes((int)CommandType);
 			var command = utf.GetBytes(ToCommandString());
-			var string2 = utf.GetBytes(String2);
 
 			var totalLength = RconPacket.PacketSizeLength
 				+ RconPacket.RequestIdLength
 				+ RconPacket.CommandTypeLength
 				+ command.Length
-				+ RconPacket.TerminatorLength
-				+ string2.Length
-				+ RconPacket.TerminatorLength;
+				+ RconPacket.DoubleTerminatorLength;
 
 			var packetSize = BitConverter.GetBytes(totalLength - RconPacket.PacketSizeLength);
 			var bytes = new byte[totalLength];
@@ -87,10 +86,7 @@ namespace Stajs.Rcon.Core.Commands
 			i += command.Length;
 
 			bytes[i] = 0;
-			i += RconPacket.TerminatorLength;
-
-			string2.CopyTo(bytes, i);
-			i += string2.Length;
+			i++;
 
 			bytes[i] = 0;
 

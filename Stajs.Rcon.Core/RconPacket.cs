@@ -57,6 +57,7 @@ namespace Stajs.Rcon.Core
 			 *		If the Request Id is mirrored from the Request, then the response is successful.
 			 *		If the Request Id is -1, then authentication failed with a bad password.
 			 *		Any other Request Id is an an error and an auth Command should be sent before retrying.
+			 *		It should be incremented for each request.
 			 *		
 			 * Response type (int = 4 bytes)
 			 *		Either SERVERDATA_RESPONSE_VALUE (0) or SERVERDATA_AUTH_RESPONSE (2).
