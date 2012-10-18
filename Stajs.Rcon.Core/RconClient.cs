@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Stajs.Rcon.Core.Commands;
+using Stajs.Rcon.Core.Packets;
 using Stajs.Rcon.Core.Responses;
 
 namespace Stajs.Rcon.Core
@@ -13,11 +14,10 @@ namespace Stajs.Rcon.Core
 	{
 		private readonly IPEndPoint _server;
 		private readonly Socket _socket;
-		private readonly string _password;
 		private int _requestId;
 
 		private readonly List<int> _openResponses = new List<int>();
-		private readonly List<RconPacket> _openPackets = new List<RconPacket>();
+		private readonly List<RconResponsePacket> _openPackets = new List<RconResponsePacket>();
 		private readonly Queue<RconResponse> _responses = new Queue<RconResponse>();
 
 		public RconClient(string ipAddress, int port) : this(IPAddress.Parse(ipAddress), port) { }
@@ -26,7 +26,6 @@ namespace Stajs.Rcon.Core
 
 		public RconClient(IPEndPoint server)
 		{
-			_requestId = 0;
 			_server = server;
 			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
 			{
@@ -35,21 +34,6 @@ namespace Stajs.Rcon.Core
 			};
 
 			_socket.Connect(_server);
-		}
-
-		[Obsolete]
-		public void Test()
-		{
-			Send(new AuthenticateCommand(_password));
-			Send(new RawCommand("cvarlist"));
-			Send(new UsersCommand());
-			Send(new SayCommand("Oh hai!"));
-			Send(new StatusCommand());
-
-			Receive();
-
-			Debug.Print("_openResponses.Count: " + _openResponses.Count);
-			Debug.Print("_openResponses: " + string.Join(",", _openResponses));
 		}
 
 		public RconResponse Send(RconCommand command)
@@ -63,7 +47,7 @@ namespace Stajs.Rcon.Core
 
 			foreach (var c in commands)
 			{
-				var bytes = c.GetBytes(++_requestId);
+				var bytes = c.ToPacket(++_requestId).Bytes;
 				var bytesSent = _socket.Send(bytes);
 
 				if (c is EndCommand)
@@ -85,9 +69,6 @@ namespace Stajs.Rcon.Core
 
 		private void Receive()
 		{
-			// TODO: Timeout
-			// TODO: Exceptions
-
 			while (_openResponses.Any())
 			{
 				ReadFromSocket();
@@ -100,7 +81,7 @@ namespace Stajs.Rcon.Core
 			var packetSize = BitConverter.ToInt32(sizeBuffer, 0);
 			var packetBuffer = ReadFromSocket(packetSize);
 			var totalBytes = sizeBuffer.Concat(packetBuffer).ToArray();
-			var packet = new RconPacket(totalBytes);
+			var packet = new RconResponsePacket(totalBytes);
 
 			_openPackets.Add(packet);
 
@@ -112,7 +93,7 @@ namespace Stajs.Rcon.Core
 
 			Debug.Print("<    packet.RequestId: " + packet.RequestId);
 			Debug.Print("<    packet.ResponseType: " + packet.ResponseType);
-			Debug.Print("<    packet.Response:\n" + packet.Response);
+			Debug.Print("<    packet.Response:\n" + packet.Content);
 			Debug.Print("<    Bytes received: " + totalBytes.Length);
 			Debug.Print("----------------------------------------------");
 		}

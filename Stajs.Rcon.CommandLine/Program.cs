@@ -10,9 +10,10 @@ namespace Stajs.Rcon.CommandLine
 	{
 		static void Main(string[] args)
 		{
-			var ipAddress = ConfigurationManager.AppSettings["IpAddress"];
-			var port = int.Parse(ConfigurationManager.AppSettings["Port"]);
-			var password = ConfigurationManager.AppSettings["Password"];
+			var appSettings = ConfigurationManager.AppSettings;
+			var ipAddress = appSettings["IpAddress"];
+			var port = int.Parse(appSettings["Port"]);
+			var password = appSettings["Password"];
 
 			Console.WriteLine("Connecting to {0}:{1}", ipAddress, port);
 			var rcon = new RconClient(ipAddress, port);
@@ -34,7 +35,6 @@ namespace Stajs.Rcon.CommandLine
 			FormatResponse(response);
 
 			Console.ReadKey();
-			//rcon.Test();
 		}
 
 		private static void FormatResponse(RconResponse response)

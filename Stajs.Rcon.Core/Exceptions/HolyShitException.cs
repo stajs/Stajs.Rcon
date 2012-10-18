@@ -4,7 +4,7 @@ namespace Stajs.Rcon.Core.Exceptions
 {
 	public class HolyShitException : Exception
 	{
-		public string Message { get; private set; }
+		public new string Message { get; private set; }
 
 		public HolyShitException(string message)
 		{

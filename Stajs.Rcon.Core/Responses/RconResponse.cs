@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Stajs.Rcon.Core.Exceptions;
+using Stajs.Rcon.Core.Packets;
 
 namespace Stajs.Rcon.Core.Responses
 {
@@ -10,10 +11,10 @@ namespace Stajs.Rcon.Core.Responses
 	{
 		public int RequestId { get; private set; }
 		public ServerResponseType ResponseType { get; private set; }
-		public List<RconPacket> Packets { get; private set; }
+		public List<RconResponsePacket> Packets { get; private set; }
 		public string Content { get; private set; }
 
-		public RconResponse(List<RconPacket> packets)
+		public RconResponse(List<RconResponsePacket> packets)
 		{
 			// Ensure packets are all the same RequestId
 			RequestId = packets
@@ -50,7 +51,7 @@ namespace Stajs.Rcon.Core.Responses
 			var sb = new StringBuilder();
 
 			foreach (var packet in Packets)
-				sb.Append(packet.Response);
+				sb.Append(packet.Content);
 
 			return sb.ToString();
 		}
