@@ -8,7 +8,11 @@ namespace Stajs.Rcon.Core.Commands
 	{
 		public int? RequestId { get; private set; }
 		public ServerCommandType CommandType { get; private set; }
-		public string Command { get { return ToCommandString(); } }
+
+		internal virtual string CommandBase
+		{
+			get { return string.Empty; }
+		}
 
 		protected RconCommand(ServerCommandType commandType)
 		{

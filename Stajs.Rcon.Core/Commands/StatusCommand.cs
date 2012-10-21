@@ -1,14 +1,24 @@
 ﻿namespace Stajs.Rcon.Core.Commands
 {
-	public class StatusCommand : RconCommand
+	public class StatusCommand : RconCommand, ISuggestion
 	{
+		internal override string CommandBase
+		{
+			get { return "status"; }
+		}
+
 		public StatusCommand() : base(ServerCommandType.Execute)
 		{
 		}
 
 		internal override string ToCommandString()
 		{
-			return "status";
+			return CommandBase;
+		}
+
+		public string ToSuggestionString()
+		{
+			return CommandBase;
 		}
 	}
 }

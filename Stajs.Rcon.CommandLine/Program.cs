@@ -10,6 +10,14 @@ namespace Stajs.Rcon.CommandLine
 	{
 		static void Main(string[] args)
 		{
+			//var test1 = AutoComplete.GetSuggestion("s");
+			//var test2 = AutoComplete.GetSuggestion("sa");
+			//var test3 = AutoComplete.GetSuggestion("st");
+			//var test4 = AutoComplete.GetSuggestion("");
+			//var test5 = AutoComplete.GetSuggestion("u");
+
+			//return;
+
 			var appSettings = ConfigurationManager.AppSettings;
 			var ipAddress = appSettings["IpAddress"];
 			var port = int.Parse(appSettings["Port"]);

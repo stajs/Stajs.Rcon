@@ -57,7 +57,7 @@ namespace Stajs.Rcon.Core
 
 				Debug.Print("   > command.RequestId: " + c.RequestId);
 				Debug.Print("   > command.CommandType: " + c.CommandType);
-				Debug.Print("   > command.Command: " + c.Command);
+				Debug.Print("   > command.ToCommandString(): " + c.ToCommandString());
 				Debug.Print("   > Bytes sent: " + bytesSent);
 				Debug.Print("----------------------------------------------");
 			}
