@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Stajs.Rcon.Core.Exceptions;
 using Stajs.Rcon.Core.Extensions;
+using Stajs.Rcon.Core.Responses;
 
 namespace Stajs.Rcon.Core.Packets
 {

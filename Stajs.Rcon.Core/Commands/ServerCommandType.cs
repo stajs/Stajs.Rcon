@@ -1,4 +1,4 @@
-﻿namespace Stajs.Rcon.Core
+﻿namespace Stajs.Rcon.Core.Commands
 {
 	public enum ServerCommandType
 	{

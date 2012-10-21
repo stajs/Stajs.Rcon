@@ -1,4 +1,6 @@
-﻿namespace Stajs.Rcon.Core
+﻿using Stajs.Rcon.Core.Commands;
+
+namespace Stajs.Rcon.Core.Responses
 {
 	public enum ServerResponseType
 	{

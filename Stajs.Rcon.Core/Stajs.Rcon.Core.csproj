@@ -56,10 +56,10 @@
     <Compile Include="RconClient.cs" />
     <Compile Include="Packets\RconPacket.cs" />
     <Compile Include="Responses\RconResponse.cs" />
-    <Compile Include="ServerCommandType.cs">
+    <Compile Include="Commands\ServerCommandType.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ServerResponseType.cs">
+    <Compile Include="Responses\ServerResponseType.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

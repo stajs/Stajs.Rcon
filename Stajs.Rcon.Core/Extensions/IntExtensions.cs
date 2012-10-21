@@ -1,4 +1,5 @@
 ﻿using System;
+using Stajs.Rcon.Core.Responses;
 
 namespace Stajs.Rcon.Core.Extensions
 {
